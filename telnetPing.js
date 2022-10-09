@@ -20,6 +20,7 @@ var ip_duan = function(duan) {
 for(let c in CDuans) {
 	ip_duan(CDuans[c]);
 }
+//ip_duan('192.168.0.');
 
 var ports = [];
 //for(let k = 1; k < 65535; k++) {
@@ -86,7 +87,7 @@ var _scanPorts = function(i, host, ports, callback) {
     ep.after('get_ports' + host, ports.length, function (infos) {
 //    	console.log('get_ports(2)' + host, infos);
 		let result = [];
-		if(infos.length == 0) {
+		if(infos.length > 0) {
 			infos.sort(compare('j'));
 			for(let k in infos) {
 				let info = infos[k];
@@ -99,7 +100,7 @@ var _scanPorts = function(i, host, ports, callback) {
 		} else {//没扫描到端口ping
 			session.pingHost (host, function (error, target) {
 			    if (!error) {
-					result.push('0');
+					result.push(0);
 				}
 				callback({i, host , info: result});
 			});
