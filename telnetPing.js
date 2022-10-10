@@ -20,15 +20,17 @@ var ip_duan = function(duan) {
 for(let c in CDuans) {
 	ip_duan(CDuans[c]);
 }
-//ip_duan('192.168.0.');
 
 var ports = [];
 //for(let k = 1; k < 65535; k++) {
 //	ports[ports.length] = k;
 //}
+
 for(let k = 1; k <= 1024; k++) {
 	ports[ports.length] = k;
 }
+//ip_duan('192.168.1.');
+
 //var ports = [1, 65535];
 //var ports = [22];
 //var ports = [65022];
@@ -87,17 +89,36 @@ var _scanPorts = function(i, host, ports, callback) {
     ep.after('get_ports' + host, ports.length, function (infos) {
 //    	console.log('get_ports(2)' + host, infos);
 		let result = [];
-		if(infos.length > 0) {
-			infos.sort(compare('j'));
-			for(let k in infos) {
-				let info = infos[k];
-				if(info.info) {
-					result.push(info.port);
-				}
-			}
-	    	console.log('get_ports(2)', {i, host , info: result});
+        //console.log('infos', infos);
+        // infos [ { j: 0, host: '198.10.71.254', port: 21, info: undefined },
+        // { j: 1, host: '198.10.71.254', port: 22, info: undefined },
+        // { j: 2, host: '198.10.71.254', port: 23, info: undefined },
+        // { j: 3, host: '198.10.71.254', port: 80, info: undefined },
+        // { j: 4, host: '198.10.71.254', port: 443, info: undefined },
+        // { j: 5, host: '198.10.71.254', port: 1433, info: undefined },
+        // { j: 6, host: '198.10.71.254', port: 1521, info: undefined },
+        // { j: 7, host: '198.10.71.254', port: 3306, info: undefined },
+        // { j: 8, host: '198.10.71.254', port: 6379, info: undefined },
+        // { j: 9, host: '198.10.71.254', port: 7001, info: undefined },
+        // { j: 10, host: '198.10.71.254', port: 8080, info: undefined },
+        // { j: 11, host: '198.10.71.254', port: 9080, info: undefined },
+        // { j: 12, host: '198.10.71.254', port: 27017, info: undefined },
+        // { j: 13, host: '198.10.71.254', port: 65022, info: undefined },
+        // { j: 14, host: '198.10.71.254', port: 3389, info: undefined },
+        // { j: 15, host: '198.10.71.254', port: 33890, info: undefined },
+        // { j: 16, host: '198.10.71.254', port: 65089, info: undefined } ]
+        infos.sort(compare('j'));
+        for(let k in infos) {
+            let info = infos[k];
+            if(info.info) {
+                result.push(info.port);
+            }
+        }
+        ////console.log('get_ports(2)', {i, host , info: result});
+		if(result.length > 0) {
 			callback({i, host , info: result});
 		} else {//没扫描到端口ping
+            //console.log('=============', host);
 			session.pingHost (host, function (error, target) {
 			    if (!error) {
 					result.push(0);
@@ -140,9 +161,9 @@ var start = function(hosts, ports) {
 	});
 	for (let i = 0; i < hosts.length; i++) {
 		let host = hosts[i];
-		console.log('get_hosts(0)', i, host, ports);
+		////console.log('get_hosts(0)', i, host, ports);
 		hostBagpipe.push(_scanPorts, i, host, ports, function (info) {
-			console.log('get_hosts(1)', i, host, ports, info);
+			////console.log('get_hosts(1)', i, host, ports, info);
 			ep.emit('get_hosts', {i: info.i, host: info.host, info: info.info});
 		});
 	}
